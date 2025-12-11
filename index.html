@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            text-align: center;
+        }
+        #qr-code {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                font-size: 12pt;
+            }
+
+            #qr-code img {
+                width: 12.5%; /* 1/8th of A4 size */
+                height: auto;
+            }
+
+            .container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+
+            button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        <input type="text" id="qr-text" placeholder="Enter text for QR code" />
+        <button onclick="generateQRCode()">Generate QR Code</button>
+
+        <div id="qr-code"></div>
+
+        <button onclick="printQRCode()">Print QR Code</button>
+    </div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+    <script>
+        // Function to generate QR Code
+        function generateQRCode() {
+            var text = document.getElementById('qr-text').value;
+            if (text) {
+                QRCode.toDataURL(text, { errorCorrectionLevel: 'H' }, function (err, url) {
+                    if (err) {
+                        console.error('QR Code Generation Error: ', err);
+                        alert("Error generating QR code.");
+                        return;
+                    }
+                    // Display QR code
+                    var qrCodeImg = '<img src="' + url + '" alt="QR Code" />';
+                    document.getElementById('qr-code').innerHTML = qrCodeImg;
+                });
+            } else {
+                alert("Please enter some text to generate a QR code.");
+            }
+        }
+
+        // Function to print QR Code
+        function printQRCode() {
+            var qrCodeImg = document.getElementById('qr-code').innerHTML;
+            if (qrCodeImg) {
+                var printWindow = window.open('', '', 'height=600,width=800');
+                printWindow.document.write('<html><head><title>Print QR Code</title>');
+                printWindow.document.write('<style>@media print { body { margin: 0; } #qr-code img { width: 12.5%; height: auto; } }</style>');
+                printWindow.document.write('</head><body>');
+                printWindow.document.write(qrCodeImg);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.print();
+            } else {
+                alert("Please generate a QR code first.");
+            }
+        }
+    </script>
+</body>
+</html>
